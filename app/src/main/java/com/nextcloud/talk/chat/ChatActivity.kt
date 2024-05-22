@@ -182,6 +182,7 @@ import com.nextcloud.talk.ui.recyclerview.MessageSwipeCallback
 import com.nextcloud.talk.utils.ApiUtils
 import com.nextcloud.talk.utils.AudioUtils
 import com.nextcloud.talk.utils.CapabilitiesUtil
+import com.nextcloud.talk.utils.CharPolicy
 import com.nextcloud.talk.utils.ContactUtils
 import com.nextcloud.talk.utils.ConversationUtils
 import com.nextcloud.talk.utils.DateConstants
@@ -190,7 +191,6 @@ import com.nextcloud.talk.utils.DisplayUtils
 import com.nextcloud.talk.utils.FileUtils
 import com.nextcloud.talk.utils.FileViewerUtils
 import com.nextcloud.talk.utils.ImageEmojiEditText
-import com.nextcloud.talk.utils.CharPolicy
 import com.nextcloud.talk.utils.Mimetype
 import com.nextcloud.talk.utils.NotificationUtils
 import com.nextcloud.talk.utils.ParticipantPermissions
@@ -1156,92 +1156,94 @@ class ChatActivity :
     }
 
     private fun initMessageInputView() {
-        val filters = arrayOfNulls<InputFilter>(1)
-        val lengthFilter = CapabilitiesUtil.getMessageMaxLength(spreedCapabilities)
+        if (binding.messageInputView.inputEditText?.filters?.isEmpty() == true) {
+            val filters = arrayOfNulls<InputFilter>(1)
+            val lengthFilter = CapabilitiesUtil.getMessageMaxLength(spreedCapabilities)
 
-        filters[0] = InputFilter.LengthFilter(lengthFilter)
-        binding.messageInputView.inputEditText?.filters = filters
+            filters[0] = InputFilter.LengthFilter(lengthFilter)
+            binding.messageInputView.inputEditText?.filters = filters
 
-        binding.messageInputView.inputEditText?.addTextChangedListener(object : TextWatcher {
+            binding.messageInputView.inputEditText?.addTextChangedListener(object : TextWatcher {
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-                // unused atm
-            }
-
-            @Suppress("Detekt.TooGenericExceptionCaught")
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                updateOwnTypingStatus(s)
-
-                if (s.length >= lengthFilter) {
-                    binding.messageInputView.inputEditText?.error = String.format(
-                        Objects.requireNonNull<Resources>(resources).getString(R.string.nc_limit_hit),
-                        lengthFilter.toString()
-                    )
-                } else {
-                    binding.messageInputView.inputEditText?.error = null
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+                    // unused atm
                 }
 
-                val editable = binding.messageInputView.inputEditText?.editableText
-                editedTextBehaviorSubject.onNext(editable.toString().trim())
+                @Suppress("Detekt.TooGenericExceptionCaught")
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                    updateOwnTypingStatus(s)
 
-                if (editable != null && binding.messageInputView.inputEditText != null) {
-                    val mentionSpans = editable.getSpans(
-                        0,
-                        binding.messageInputView.inputEditText!!.length(),
-                        Spans.MentionChipSpan::class.java
-                    )
-                    var mentionSpan: Spans.MentionChipSpan
-                    for (i in mentionSpans.indices) {
-                        mentionSpan = mentionSpans[i]
-                        if (start >= editable.getSpanStart(mentionSpan) &&
-                            start < editable.getSpanEnd(mentionSpan)
-                        ) {
-                            if (editable.subSequence(
-                                    editable.getSpanStart(mentionSpan),
-                                    editable.getSpanEnd(mentionSpan)
-                                ).toString().trim { it <= ' ' } != mentionSpan.label
+                    if (s.length >= lengthFilter) {
+                        binding.messageInputView.inputEditText?.error = String.format(
+                            Objects.requireNonNull<Resources>(resources).getString(R.string.nc_limit_hit),
+                            lengthFilter.toString()
+                        )
+                    } else {
+                        binding.messageInputView.inputEditText?.error = null
+                    }
+
+                    val editable = binding.messageInputView.inputEditText?.editableText
+                    editedTextBehaviorSubject.onNext(editable.toString().trim())
+
+                    if (editable != null && binding.messageInputView.inputEditText != null) {
+                        val mentionSpans = editable.getSpans(
+                            0,
+                            binding.messageInputView.inputEditText!!.length(),
+                            Spans.MentionChipSpan::class.java
+                        )
+                        var mentionSpan: Spans.MentionChipSpan
+                        for (i in mentionSpans.indices) {
+                            mentionSpan = mentionSpans[i]
+                            if (start >= editable.getSpanStart(mentionSpan) &&
+                                start < editable.getSpanEnd(mentionSpan)
                             ) {
-                                editable.removeSpan(mentionSpan)
+                                if (editable.subSequence(
+                                        editable.getSpanStart(mentionSpan),
+                                        editable.getSpanEnd(mentionSpan)
+                                    ).toString().trim { it <= ' ' } != mentionSpan.label
+                                ) {
+                                    editable.removeSpan(mentionSpan)
+                                }
                             }
                         }
                     }
                 }
+
+                override fun afterTextChanged(s: Editable) {
+                    // unused atm
+                }
+            })
+
+            // Image keyboard support
+            // See: https://developer.android.com/guide/topics/text/image-keyboard
+
+            (binding.messageInputView.inputEditText as ImageEmojiEditText).onCommitContentListener = {
+                uploadFile(it.toString(), false)
+            }
+            initVoiceRecordButton()
+
+            if (sharedText.isNotEmpty()) {
+                binding.messageInputView.inputEditText?.setText(sharedText)
             }
 
-            override fun afterTextChanged(s: Editable) {
-                // unused atm
+            binding.messageInputView.setAttachmentsListener {
+                AttachmentDialog(this, this).show()
             }
-        })
 
-        // Image keyboard support
-        // See: https://developer.android.com/guide/topics/text/image-keyboard
-
-        (binding.messageInputView.inputEditText as ImageEmojiEditText).onCommitContentListener = {
-            uploadFile(it.toString(), false)
-        }
-        initVoiceRecordButton()
-
-        if (sharedText.isNotEmpty()) {
-            binding.messageInputView.inputEditText?.setText(sharedText)
-        }
-
-        binding.messageInputView.setAttachmentsListener {
-            AttachmentDialog(this, this).show()
-        }
-
-        binding.messageInputView.button?.setOnClickListener {
-            submitMessage(false)
-        }
-
-        if (CapabilitiesUtil.hasSpreedFeatureCapability(spreedCapabilities, SpreedFeatures.SILENT_SEND)) {
-            binding.messageInputView.button?.setOnLongClickListener {
-                showSendButtonMenu()
-                true
+            binding.messageInputView.button?.setOnClickListener {
+                submitMessage(false)
             }
-        }
 
-        binding.messageInputView.button?.contentDescription =
-            resources?.getString(R.string.nc_description_send_message_button)
+            if (CapabilitiesUtil.hasSpreedFeatureCapability(spreedCapabilities, SpreedFeatures.SILENT_SEND)) {
+                binding.messageInputView.button?.setOnLongClickListener {
+                    showSendButtonMenu()
+                    true
+                }
+            }
+
+            binding.messageInputView.button?.contentDescription =
+                resources?.getString(R.string.nc_description_send_message_button)
+        }
     }
 
     private fun editMessageAPI(message: ChatMessage, editedMessageText: String) {
@@ -3474,24 +3476,32 @@ class ChatActivity :
                 ""
             }
 
-        val statusMessageView = binding.chatToolbar.findViewById<TextView>(R.id.chat_toolbar_status_message)
         if (currentConversation?.type == ConversationType.ROOM_TYPE_ONE_TO_ONE_CALL) {
             var statusMessage = ""
             if (currentConversation?.statusIcon != null) {
                 statusMessage += currentConversation?.statusIcon
             }
-
             if (currentConversation?.statusMessage != null) {
                 statusMessage += currentConversation?.statusMessage
             }
-
-            if (statusMessage.isNotEmpty()) {
-                viewThemeUtils.platform.colorTextView(statusMessageView, ColorRole.ON_SURFACE)
-                statusMessageView.text = statusMessage
-                statusMessageView.visibility = View.VISIBLE
-            } else {
-                statusMessageView.visibility = View.GONE
+            statusMessageViewContents(statusMessage)
+        } else {
+            if (currentConversation?.type == ConversationType.ROOM_GROUP_CALL ||
+                currentConversation?.type == ConversationType.ROOM_PUBLIC_CALL
+            ) {
+                var descriptionMessage = ""
+                descriptionMessage += currentConversation?.description
+                statusMessageViewContents(descriptionMessage)
             }
+        }
+    }
+
+    private fun statusMessageViewContents(statusMessageContent: String) {
+        val statusMessageView = binding.chatToolbar.findViewById<TextView>(R.id.chat_toolbar_status_message)
+        if (statusMessageContent.isNotEmpty()) {
+            viewThemeUtils.platform.colorTextView(statusMessageView, ColorRole.ON_SURFACE)
+            statusMessageView.text = statusMessageContent
+            statusMessageView.visibility = View.VISIBLE
         } else {
             statusMessageView.visibility = View.GONE
         }
@@ -3759,8 +3769,16 @@ class ChatActivity :
     }
 
     private fun processMessagesFromTheFuture(chatMessageList: List<ChatMessage>) {
-        val shouldAddNewMessagesNotice = layoutManager?.findFirstVisibleItemPosition()!! > 0
-        if (shouldAddNewMessagesNotice) {
+        val newMessagesAvailable = (adapter?.itemCount ?: 0) > 0 && chatMessageList.isNotEmpty()
+        val insertNewMessagesNotice = if (newMessagesAvailable) {
+            chatMessageList.any { it.actorId != conversationUser!!.userId }
+        } else {
+            false
+        }
+
+        val scrollToEndOnUpdate = layoutManager?.findFirstVisibleItemPosition() == 0
+
+        if (insertNewMessagesNotice) {
             val unreadChatMessage = ChatMessage()
             unreadChatMessage.jsonMessageId = -1
             unreadChatMessage.actorId = "-1"
@@ -3769,7 +3787,41 @@ class ChatActivity :
             adapter?.addToStart(unreadChatMessage, false)
         }
 
-        addMessagesToAdapter(shouldAddNewMessagesNotice, chatMessageList)
+        if (!scrollToEndOnUpdate) {
+            binding.popupBubbleView.isShown.let {
+                if (it) {
+                    newMessagesCount++
+                } else {
+                    newMessagesCount = 1
+                    binding.scrollDownButton.visibility = View.GONE
+                    binding.popupBubbleView.show()
+                }
+            }
+        } else {
+            binding.scrollDownButton.visibility = View.GONE
+            newMessagesCount = 0
+        }
+
+        for (chatMessage in chatMessageList) {
+            chatMessage.activeUser = conversationUser
+
+            adapter?.let {
+                chatMessage.isGrouped = (
+                    it.isPreviousSameAuthor(chatMessage.actorId, -1) &&
+                        it.getSameAuthorLastMessagesCount(chatMessage.actorId) %
+                        GROUPED_MESSAGES_SAME_AUTHOR_THRESHOLD > 0
+                    )
+                chatMessage.isOneToOneConversation =
+                    (currentConversation?.type == ConversationType.ROOM_TYPE_ONE_TO_ONE_CALL)
+                chatMessage.isFormerOneToOneConversation =
+                    (currentConversation?.type == ConversationType.FORMER_ONE_TO_ONE)
+                it.addToStart(chatMessage, scrollToEndOnUpdate)
+            }
+        }
+
+        if (insertNewMessagesNotice && scrollToEndOnUpdate && adapter != null) {
+            scrollToFirstUnreadMessage()
+        }
     }
 
     private fun processMessagesNotFromTheFuture(chatMessageList: List<ChatMessage>) {
@@ -3811,53 +3863,6 @@ class ChatActivity :
                 it.getMessagePositionByIdInReverse("-1"),
                 binding.messagesListView.height / 2
             )
-        }
-    }
-
-    private fun addMessagesToAdapter(shouldAddNewMessagesNotice: Boolean, chatMessageList: List<ChatMessage>) {
-        val isThereANewNotice =
-            shouldAddNewMessagesNotice || adapter?.getMessagePositionByIdInReverse("-1") != -1
-        for (chatMessage in chatMessageList) {
-            chatMessage.activeUser = conversationUser
-
-            val shouldScroll =
-                !isThereANewNotice &&
-                    !shouldAddNewMessagesNotice &&
-                    layoutManager?.findFirstVisibleItemPosition() == 0 ||
-                    adapter != null &&
-                    adapter?.itemCount == 0
-
-            modifyMessageCount(shouldAddNewMessagesNotice, shouldScroll)
-
-            adapter?.let {
-                chatMessage.isGrouped = (
-                    it.isPreviousSameAuthor(chatMessage.actorId, -1) &&
-                        it.getSameAuthorLastMessagesCount(chatMessage.actorId) %
-                        GROUPED_MESSAGES_SAME_AUTHOR_THRESHOLD > 0
-                    )
-                chatMessage.isOneToOneConversation =
-                    (currentConversation?.type == ConversationType.ROOM_TYPE_ONE_TO_ONE_CALL)
-                chatMessage.isFormerOneToOneConversation =
-                    (currentConversation?.type == ConversationType.FORMER_ONE_TO_ONE)
-                it.addToStart(chatMessage, shouldScroll)
-            }
-        }
-    }
-
-    private fun modifyMessageCount(shouldAddNewMessagesNotice: Boolean, shouldScroll: Boolean) {
-        if (shouldAddNewMessagesNotice) {
-            binding.popupBubbleView.isShown.let {
-                if (it) {
-                    newMessagesCount++
-                } else {
-                    newMessagesCount = 1
-                    binding.scrollDownButton.visibility = View.GONE
-                    binding.popupBubbleView.show()
-                }
-            }
-        } else {
-            binding.scrollDownButton.visibility = View.GONE
-            newMessagesCount = 0
         }
     }
 

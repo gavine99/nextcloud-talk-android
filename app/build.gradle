@@ -136,7 +136,7 @@ ext {
     daggerVersion = "2.51.1"
     emojiVersion = "1.4.0"
     fidoVersion = "4.1.0-patch2"
-    lifecycleVersion = '2.7.0'
+    lifecycleVersion = '2.8.0'
     okhttpVersion = "4.12.0"
     markwonVersion = "4.6.2"
     materialDialogsVersion = "3.3.0"
@@ -158,8 +158,8 @@ configurations.configureEach {
 
 dependencies {
     implementation 'androidx.preference:preference-ktx:1.2.1'
-    implementation 'androidx.datastore:datastore-core:1.0.0'
-    implementation 'androidx.datastore:datastore-preferences:1.0.0'
+    implementation 'androidx.datastore:datastore-core:1.1.1'
+    implementation 'androidx.datastore:datastore-preferences:1.1.1'
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.6")
 	
     implementation fileTree(include: ['*'], dir: 'libs')
@@ -167,7 +167,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'com.google.android.material:material:1.12.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     implementation "com.vanniktech:emoji-google:0.18.0"
     implementation "androidx.emoji2:emoji2:${emojiVersion}"
@@ -241,7 +241,7 @@ dependencies {
     implementation "io.coil-kt:coil:${coilKtVersion}"
     implementation "io.coil-kt:coil-gif:${coilKtVersion}"
     implementation "io.coil-kt:coil-svg:${coilKtVersion}"
-    implementation 'com.github.natario1:Autocomplete:v1.1.0'
+    implementation 'com.github.natario1:Autocomplete:1.1.0'
 
     implementation "com.github.nextcloud-deps.hwsecurity:hwsecurity-fido:${fidoVersion}"
     implementation "com.github.nextcloud-deps.hwsecurity:hwsecurity-fido2:${fidoVersion}"
@@ -256,7 +256,7 @@ dependencies {
     implementation "com.afollestad.material-dialogs:bottomsheets:${materialDialogsVersion}"
     implementation "com.afollestad.material-dialogs:lifecycle:${materialDialogsVersion}"
 
-    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.google.code.gson:gson:2.11.0'
 
     implementation "androidx.media3:media3-exoplayer:$media3_version"
     implementation "androidx.media3:media3-ui:$media3_version"
@@ -276,11 +276,11 @@ dependencies {
         exclude group: 'org.apache.httpcomponents', module: 'httpclient'
     })
 
-    implementation 'androidx.core:core-ktx:1.13.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
 
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:5.11.0'
-    androidTestImplementation 'org.mockito:mockito-android:5.11.0'
+    testImplementation 'org.mockito:mockito-core:5.12.0'
+    androidTestImplementation 'org.mockito:mockito-android:5.12.0'
     testImplementation 'androidx.arch.core:core-testing:2.2.0'
 
     androidTestImplementation "androidx.test:core:1.5.0"
@@ -300,9 +300,9 @@ dependencies {
     gplayImplementation 'com.google.android.gms:play-services-base:18.4.0'
     gplayImplementation "com.google.firebase:firebase-messaging:23.4.1"
 
-     implementation 'androidx.activity:activity-ktx:1.8.2'
+     implementation 'androidx.activity:activity-ktx:1.9.0'
 
-    implementation 'com.github.nextcloud.android-common:ui:0.20.0'
+    implementation 'com.github.nextcloud.android-common:ui:0.21.0'
 
     implementation 'com.github.nextcloud-deps:android-talk-webrtc:121.6167.0'
 
