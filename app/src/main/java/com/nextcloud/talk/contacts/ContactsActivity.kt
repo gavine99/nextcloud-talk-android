@@ -128,7 +128,6 @@ class ContactsActivity :
             // adding a new conversation, setting a flag.
             isNewConversationView = true
         } else if (intent.hasExtra(BundleKeys.KEY_ADD_PARTICIPANTS)) {
-
             // adding the participants in the conversation also opens this activity, setting a flag for it.
             isAddingParticipantsView = true
             conversationToken = intent.getStringExtra(BundleKeys.KEY_TOKEN)
@@ -481,7 +480,6 @@ class ContactsActivity :
                 }
 
                 override fun onNext(responseBody: ResponseBody) {
-
                     // getting contacts
                     val newUserItemList = processAutocompleteUserList(responseBody)
 
