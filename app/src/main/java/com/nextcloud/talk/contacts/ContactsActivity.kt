@@ -544,7 +544,7 @@ class ContactsActivity :
                 }
                 val newContactItem = ContactItem(
                     participant,
-                    currentUser,
+                    currentUser!!,
                     userHeaderItems[headerTitle],
                     viewThemeUtils
                 )

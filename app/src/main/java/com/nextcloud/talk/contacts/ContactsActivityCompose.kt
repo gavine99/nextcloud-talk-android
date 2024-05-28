@@ -7,5 +7,4 @@
 
 package com.nextcloud.talk.contacts
 
-class ContactsActivityCompose {
-}
+class ContactsActivityCompose

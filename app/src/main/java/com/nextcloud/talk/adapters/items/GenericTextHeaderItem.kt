@@ -5,85 +5,74 @@
  * SPDX-FileCopyrightText: 2017-2018 Mario Danic <mario@lovelyhq.com>
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
-package com.nextcloud.talk.adapters.items;
+package com.nextcloud.talk.adapters.items
 
-import android.util.Log;
-import android.view.View;
+import android.util.Log
+import android.view.View
+import androidx.recyclerview.widget.RecyclerView
+import com.nextcloud.talk.R
+import com.nextcloud.talk.databinding.RvItemTitleHeaderBinding
+import com.nextcloud.talk.ui.theme.ViewThemeUtils
+import eu.davidea.flexibleadapter.FlexibleAdapter
+import eu.davidea.flexibleadapter.items.AbstractHeaderItem
+import eu.davidea.flexibleadapter.items.IFlexible
+import eu.davidea.viewholders.FlexibleViewHolder
+import java.util.Objects
 
-import com.nextcloud.talk.R;
-import com.nextcloud.talk.databinding.RvItemTitleHeaderBinding;
-import com.nextcloud.talk.ui.theme.ViewThemeUtils;
+open class GenericTextHeaderItem(title: String, viewThemeUtils: ViewThemeUtils) :
+    AbstractHeaderItem<GenericTextHeaderItem.HeaderViewHolder>() {
+    val model: String
+    private val viewThemeUtils: ViewThemeUtils
 
-import java.util.List;
-import java.util.Objects;
-
-import eu.davidea.flexibleadapter.FlexibleAdapter;
-import eu.davidea.flexibleadapter.items.AbstractHeaderItem;
-import eu.davidea.flexibleadapter.items.IFlexible;
-import eu.davidea.viewholders.FlexibleViewHolder;
-
-public class GenericTextHeaderItem extends AbstractHeaderItem<GenericTextHeaderItem.HeaderViewHolder> {
-    private static final String TAG = "GenericTextHeaderItem";
-
-    private final String title;
-    private final ViewThemeUtils viewThemeUtils;
-
-    public GenericTextHeaderItem(String title, ViewThemeUtils viewThemeUtils) {
-        super();
-        setHidden(false);
-        setSelectable(false);
-        this.title = title;
-        this.viewThemeUtils = viewThemeUtils;
+    init {
+        isHidden = false
+        isSelectable = false
+        this.model = title
+        this.viewThemeUtils = viewThemeUtils
     }
 
-    public String getModel() {
-        return title;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof GenericTextHeaderItem) {
-            GenericTextHeaderItem inItem = (GenericTextHeaderItem) o;
-            return title.equals(inItem.getModel());
+    override fun equals(o: Any?): Boolean {
+        if (o is GenericTextHeaderItem) {
+            return model == o.model
         }
-        return false;
+        return false
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(title);
+    override fun hashCode(): Int {
+        return Objects.hash(model)
     }
 
-    @Override
-    public int getLayoutRes() {
-        return R.layout.rv_item_title_header;
+    override fun getLayoutRes(): Int {
+        return R.layout.rv_item_title_header
     }
 
-    @Override
-    public void bindViewHolder(FlexibleAdapter<IFlexible> adapter, HeaderViewHolder holder, int position, List<Object> payloads) {
-        if (payloads.size() > 0) {
-            Log.d(TAG, "We have payloads, so ignoring!");
+    override fun createViewHolder(
+        view: View?,
+        adapter: FlexibleAdapter<IFlexible<RecyclerView.ViewHolder>>?
+    ): HeaderViewHolder {
+        return HeaderViewHolder(view, adapter)
+    }
+
+    override fun bindViewHolder(
+        adapter: FlexibleAdapter<IFlexible<*>?>?,
+        holder: HeaderViewHolder,
+        position: Int,
+        payloads: List<Any>
+    ) {
+        if (payloads.size > 0) {
+            Log.d(TAG, "We have payloads, so ignoring!")
         } else {
-            holder.binding.titleTextView.setText(title);
-            viewThemeUtils.platform.colorPrimaryTextViewElement(holder.binding.titleTextView);
+            holder.binding.titleTextView.text = model
+            viewThemeUtils.platform.colorPrimaryTextViewElement(holder.binding.titleTextView)
         }
     }
 
-    @Override
-    public HeaderViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
-        return new HeaderViewHolder(view, adapter);
+    class HeaderViewHolder(view: View?, adapter: FlexibleAdapter<*>?) : FlexibleViewHolder(view, adapter, true) {
+        var binding: RvItemTitleHeaderBinding =
+            RvItemTitleHeaderBinding.bind(view!!)
     }
 
-    static class HeaderViewHolder extends FlexibleViewHolder {
-
-        RvItemTitleHeaderBinding binding;
-
-        /**
-         * Default constructor.
-         */
-        HeaderViewHolder(View view, FlexibleAdapter adapter) {
-            super(view, adapter, true);
-            binding = RvItemTitleHeaderBinding.bind(view);
-        }
+    companion object {
+        private const val TAG = "GenericTextHeaderItem"
     }
 }
