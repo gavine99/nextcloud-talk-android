@@ -126,7 +126,7 @@
             android:name=".account.WebViewLoginActivity"
             android:theme="@style/AppTheme" />
 
-        <activity android:name="com.nextcloud.talk.contacts.ContactsActivity"
+        <activity android:name=".contacts.ContactsActivityCompose"
             android:theme="@style/AppTheme"/>
 
         <activity

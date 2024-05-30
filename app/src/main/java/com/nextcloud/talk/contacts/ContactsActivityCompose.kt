@@ -7,11 +7,21 @@
 
 package com.nextcloud.talk.contacts
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+class ContactsActivityCompose : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContent {
+            TextMessage()
+        }
+    }
+}
 
 @Composable
-fun textMessage() {
-    // Composable functions start with capital letter, lint shows error, need to suppress this error later
-    Text(text = "This is a test Message")
+fun TextMessage() {
+    Text("This is a test message")
 }
