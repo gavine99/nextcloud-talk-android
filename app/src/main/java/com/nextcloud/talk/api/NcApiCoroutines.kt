@@ -16,13 +16,13 @@ import retrofit2.http.Query
 import retrofit2.http.QueryMap
 import retrofit2.http.Url
 
-interface NcAPI {
+interface NcApiCoroutines {
     @GET
     suspend fun getContactsWithSearchParam(
-        @Header("Authorization") authorization: String,
-        @Url url: String,
+        @Header("Authorization") authorization: String?,
+        @Url url: String?,
         @Query("shareTypes[]") listOfShareTypes: List<String>?,
-        @QueryMap options: Map<String, Any>
+        @QueryMap options: Map<String, Any>?
     ): ResponseBody
 
     /*
@@ -34,8 +34,8 @@ interface NcAPI {
      */
     @POST
     suspend fun createRoom(
-        @Header("Authorization") authorization: String,
-        @Url url: String,
-        @QueryMap options: Map<String, String>
+        @Header("Authorization") authorization: String?,
+        @Url url: String?,
+        @QueryMap options: Map<String, String>?
     ): RoomOverall
 }

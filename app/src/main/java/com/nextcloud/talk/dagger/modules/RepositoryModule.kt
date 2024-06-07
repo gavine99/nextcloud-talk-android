@@ -9,8 +9,8 @@
  */
 package com.nextcloud.talk.dagger.modules
 
-import com.nextcloud.talk.api.NcAPI
 import com.nextcloud.talk.api.NcApi
+import com.nextcloud.talk.api.NcApiCoroutines
 import com.nextcloud.talk.chat.data.ChatRepository
 import com.nextcloud.talk.chat.data.network.NetworkChatRepositoryImpl
 import com.nextcloud.talk.contacts.ContactsRepository
@@ -155,7 +155,7 @@ class RepositoryModule {
     }
 
     @Provides
-    fun provideContactsRepository(ncAPI: NcAPI): ContactsRepository {
-        return ContactsRepositoryImpl(ncAPI)
+    fun provideContactsRepository(ncApiCoroutines: NcApiCoroutines): ContactsRepository {
+        return ContactsRepositoryImpl(ncApiCoroutines)
     }
 }

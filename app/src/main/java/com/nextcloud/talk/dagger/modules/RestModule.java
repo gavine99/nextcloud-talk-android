@@ -14,6 +14,7 @@ import com.github.aurae.retrofit2.LoganSquareConverterFactory;
 import com.nextcloud.talk.BuildConfig;
 import com.nextcloud.talk.R;
 import com.nextcloud.talk.api.NcApi;
+import com.nextcloud.talk.api.NcApiCoroutines;
 import com.nextcloud.talk.application.NextcloudTalkApplication;
 import com.nextcloud.talk.users.UserManager;
 import com.nextcloud.talk.utils.ApiUtils;
@@ -73,6 +74,12 @@ public class RestModule {
     @Provides
     NcApi provideNcApi(Retrofit retrofit) {
         return retrofit.create(NcApi.class);
+    }
+
+    @Singleton
+    @Provides
+    NcApiCoroutines provideNcApiCoroutines(Retrofit retrofit){
+        return retrofit.create(NcApiCoroutines.class);
     }
 
     @Singleton

@@ -8,11 +8,11 @@
 package com.nextcloud.talk.contacts
 
 import com.nextcloud.talk.adapters.items.ContactItem
-import com.nextcloud.talk.api.NcAPI
+import com.nextcloud.talk.api.NcApiCoroutines
 import okhttp3.ResponseBody
 
 class ContactsRepositoryImpl(
-    private val ncApi: NcAPI
+    private val ncApiCoroutines: NcApiCoroutines
 ) : ContactsRepository {
     override suspend fun getContacts(
         baseUrl: String,
@@ -20,7 +20,7 @@ class ContactsRepositoryImpl(
         shareList: List<String>,
         options: Map<String, Any>
     ): List<ContactItem> {
-        val response = ncApi.getContactsWithSearchParam(baseUrl, ocsApiVersion, shareList, options)
+        val response = ncApiCoroutines.getContactsWithSearchParam(baseUrl, ocsApiVersion, shareList, options)
         return parseResponseToConatctItems(response)
     }
 
