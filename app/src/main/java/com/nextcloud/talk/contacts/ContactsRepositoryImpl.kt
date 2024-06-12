@@ -7,26 +7,20 @@
 
 package com.nextcloud.talk.contacts
 
-import com.nextcloud.talk.adapters.items.ContactItem
 import com.nextcloud.talk.api.NcApiCoroutines
-import okhttp3.ResponseBody
+import com.nextcloud.talk.models.json.autocomplete.AutocompleteOCS
 
 class ContactsRepositoryImpl(
     private val ncApiCoroutines: NcApiCoroutines
 ) : ContactsRepository {
+
     override suspend fun getContacts(
         baseUrl: String,
         ocsApiVersion: String,
         shareList: List<String>,
         options: Map<String, Any>
-    ): List<ContactItem> {
+    ): AutocompleteOCS {
         val response = ncApiCoroutines.getContactsWithSearchParam(baseUrl, ocsApiVersion, shareList, options)
-        return parseResponseToConatctItems(response)
-    }
-
-    private fun parseResponseToConatctItems(response: ResponseBody): List<ContactItem> {
-        // logic to parse data
-        val contactItem = mutableListOf<ContactItem>()
-        return contactItem
+        return response
     }
 }

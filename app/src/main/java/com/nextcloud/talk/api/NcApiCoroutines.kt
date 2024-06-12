@@ -7,8 +7,8 @@
 
 package com.nextcloud.talk.api
 
+import com.nextcloud.talk.models.json.autocomplete.AutocompleteOCS
 import com.nextcloud.talk.models.json.conversations.RoomOverall
-import okhttp3.ResponseBody
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -23,7 +23,7 @@ interface NcApiCoroutines {
         @Url url: String?,
         @Query("shareTypes[]") listOfShareTypes: List<String>?,
         @QueryMap options: Map<String, Any>?
-    ): ResponseBody
+    ): AutocompleteOCS
 
     /*
         QueryMap items are as follows:
