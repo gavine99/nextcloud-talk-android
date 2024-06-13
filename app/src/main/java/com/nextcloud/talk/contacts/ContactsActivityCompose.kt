@@ -11,12 +11,19 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,14 +32,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import autodagger.AutoInjector
 import com.nextcloud.talk.R
 import com.nextcloud.talk.api.NcApi
 import com.nextcloud.talk.application.NextcloudTalkApplication
+import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.users.UserManager
 import javax.inject.Inject
 
@@ -45,9 +56,16 @@ class ContactsActivityCompose : ComponentActivity() {
     @Inject
     lateinit var ncApi: NcApi
 
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    lateinit var contactsActivityViewModel: ContactsActivityViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         NextcloudTalkApplication.sharedApplication!!.componentApplication.inject(this)
+        contactsActivityViewModel = ViewModelProvider(this, viewModelFactory)[ContactsActivityViewModel::class.java]
+
         setContent {
             MaterialTheme {
                 Scaffold(
@@ -58,12 +76,51 @@ class ContactsActivityCompose : ComponentActivity() {
                         })
                     },
                     content = {
+                        val uiState = contactsActivityViewModel.contactsViewState.collectAsState()
                         Column(Modifier.padding(it)) {
                             ConversationCreationOptions()
+                            ContactsList(contactsUiState = uiState.value)
                         }
                     }
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ContactsList(contactsUiState: ContactsUiState)  {
+    when (contactsUiState) {
+        is ContactsUiState.None -> {
+        }
+        is ContactsUiState.Loading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        }
+        is ContactsUiState.Success -> {
+            val contacts = contactsUiState.contacts
+            if (contacts != null) {
+                ContactsItem(contacts)
+            }
+        }
+
+        is ContactsUiState.Error -> {
+        }
+    }
+}
+
+@Composable
+fun ContactsItem(contacts: List<AutocompleteUser>) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(8.dp)
+            .fillMaxSize(),
+        contentPadding = PaddingValues(all = 10.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        itemsIndexed(items = contacts) { _, contact ->
+            Text(text = contact.label!!)
         }
     }
 }
