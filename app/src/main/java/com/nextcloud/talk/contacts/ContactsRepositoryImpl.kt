@@ -20,7 +20,12 @@ class ContactsRepositoryImpl(
         shareList: List<String>,
         options: Map<String, Any>
     ): AutocompleteOCS {
-        val response = ncApiCoroutines.getContactsWithSearchParam(baseUrl, ocsApiVersion, shareList, options)
+        val response = ncApiCoroutines.getContactsWithSearchParam(
+            baseUrl,
+            ocsApiVersion,
+            shareList,
+            options
+        )
         return response
     }
 }

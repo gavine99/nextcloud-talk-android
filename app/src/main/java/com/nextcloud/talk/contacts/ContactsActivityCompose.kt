@@ -89,7 +89,7 @@ class ContactsActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun ContactsList(contactsUiState: ContactsUiState)  {
+fun ContactsList(contactsUiState: ContactsUiState) {
     when (contactsUiState) {
         is ContactsUiState.None -> {
         }
