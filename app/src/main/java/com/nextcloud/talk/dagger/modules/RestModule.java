@@ -59,6 +59,7 @@ import okhttp3.internal.tls.OkHostnameVerifier;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module(includes = DatabaseModule.class)
 public class RestModule {
@@ -78,9 +79,15 @@ public class RestModule {
 
     @Singleton
     @Provides
-    NcApiCoroutines provideNcApiCoroutines(Retrofit retrofit){
-        return retrofit.create(NcApiCoroutines.class);
+    NcApiCoroutines provideNcApiCoroutinesWithGson(OkHttpClient okHttpClientForCoroutines) {
+        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
+            .client(okHttpClientForCoroutines)
+            .baseUrl("https://nextcloud.com")
+            .addConverterFactory(GsonConverterFactory.create());
+
+        return retrofitBuilder.build().create(NcApiCoroutines.class);
     }
+
 
     @Singleton
     @Provides

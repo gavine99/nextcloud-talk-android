@@ -18,6 +18,7 @@ import retrofit2.http.Url
 
 interface NcApiCoroutines {
     @GET
+    @JvmSuppressWildcards
     suspend fun getContactsWithSearchParam(
         @Header("Authorization") authorization: String?,
         @Url url: String?,
