@@ -7,7 +7,7 @@
 
 package com.nextcloud.talk.contacts
 
-import com.nextcloud.talk.models.json.autocomplete.AutocompleteOCS
+import com.nextcloud.talk.models.json.autocomplete.AutocompleteOverall
 
 interface ContactsRepository {
     suspend fun getContacts(
@@ -15,5 +15,5 @@ interface ContactsRepository {
         ocsApiVersion: String,
         shareList: List<String>,
         options: Map<String, Any>
-    ): AutocompleteOCS
+    ): AutocompleteOverall
 }

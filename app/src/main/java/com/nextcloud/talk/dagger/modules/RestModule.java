@@ -36,6 +36,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.concurrent.TimeUnit;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.X509KeyManager;
@@ -79,13 +80,8 @@ public class RestModule {
 
     @Singleton
     @Provides
-    NcApiCoroutines provideNcApiCoroutinesWithGson(OkHttpClient okHttpClientForCoroutines) {
-        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
-            .client(okHttpClientForCoroutines)
-            .baseUrl("https://nextcloud.com")
-            .addConverterFactory(GsonConverterFactory.create());
-
-        return retrofitBuilder.build().create(NcApiCoroutines.class);
+    NcApiCoroutines provideNcApiCoroutines(Retrofit retrofit) {
+        return retrofit.create(NcApiCoroutines.class);
     }
 
 

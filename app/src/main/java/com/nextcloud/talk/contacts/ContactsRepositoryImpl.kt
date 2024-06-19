@@ -8,7 +8,7 @@
 package com.nextcloud.talk.contacts
 
 import com.nextcloud.talk.api.NcApiCoroutines
-import com.nextcloud.talk.models.json.autocomplete.AutocompleteOCS
+import com.nextcloud.talk.models.json.autocomplete.AutocompleteOverall
 
 class ContactsRepositoryImpl(
     private val ncApiCoroutines: NcApiCoroutines
@@ -19,7 +19,7 @@ class ContactsRepositoryImpl(
         ocsApiVersion: String,
         shareList: List<String>,
         options: Map<String, Any>
-    ): AutocompleteOCS  {
+    ): AutocompleteOverall {
         val response = ncApiCoroutines.getContactsWithSearchParam(
             baseUrl,
             ocsApiVersion,
