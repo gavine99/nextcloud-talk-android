@@ -7,10 +7,12 @@
 
 package com.nextcloud.talk.contacts
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import com.nextcloud.talk.R
 import com.nextcloud.talk.api.NcApi
 import com.nextcloud.talk.application.NextcloudTalkApplication
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
+import com.nextcloud.talk.openconversations.ListOpenConversationsActivity
 import com.nextcloud.talk.users.UserManager
 import javax.inject.Inject
 
@@ -115,7 +119,9 @@ fun ContactsItem(contacts: List<AutocompleteUser>) {
     LazyColumn(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxSize(),
+            .fillMaxSize()
+            .clickable {
+            },
         contentPadding = PaddingValues(all = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -147,6 +153,7 @@ fun TopAppBar(title: String, onBackClick: () -> Unit) {
 
 @Composable
 fun ConversationCreationOptions() {
+    val context = LocalContext.current
     Column(modifier = Modifier.padding(10.dp)) {
         Row(modifier = Modifier.padding(10.dp)) {
             Image(
@@ -155,7 +162,12 @@ fun ConversationCreationOptions() {
             )
             Text(text = stringResource(R.string.nc_create_new_conversation))
         }
-        Row(modifier = Modifier.padding(10.dp)) {
+        Row(
+            modifier = Modifier.padding(10.dp).clickable {
+                val intent = Intent(context, ListOpenConversationsActivity::class.java)
+                context.startActivity(intent)
+            }
+        ) {
             Image(
                 painter = painterResource(R.drawable.baseline_format_list_bulleted_24),
                 contentDescription = "Join open conversations Icon"
