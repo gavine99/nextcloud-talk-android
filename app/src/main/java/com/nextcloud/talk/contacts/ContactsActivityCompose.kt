@@ -75,8 +75,6 @@ class ContactsActivityCompose : ComponentActivity() {
                 Scaffold(
                     topBar = {
                         TopAppBar(title = stringResource(R.string.nc_app_product_name), onBackClick = {
-                            onBackPressedDispatcher.onBackPressed()
-                            // not working currently with compose
                         })
                     },
                     content = {
@@ -126,6 +124,8 @@ fun ContactsItem(contacts: List<AutocompleteUser>) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         itemsIndexed(items = contacts) { _, contact ->
+            // AsyncImage(model = //url,
+            //     ,contentDescription = null)
             Text(text = contact.label!!)
         }
     }
@@ -163,6 +163,7 @@ fun ConversationCreationOptions() {
             Text(text = stringResource(R.string.nc_create_new_conversation))
         }
         Row(
+
             modifier = Modifier.padding(10.dp).clickable {
                 val intent = Intent(context, ListOpenConversationsActivity::class.java)
                 context.startActivity(intent)

@@ -324,6 +324,8 @@ dependencies {
     implementation 'com.github.nextcloud.android-common:ui:0.21.0'
 
     implementation 'com.github.nextcloud-deps:android-talk-webrtc:121.6167.0'
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
