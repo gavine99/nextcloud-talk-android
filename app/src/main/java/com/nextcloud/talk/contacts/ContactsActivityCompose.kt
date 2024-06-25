@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -43,22 +44,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import autodagger.AutoInjector
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import coil.transform.CircleCropTransformation
 import com.nextcloud.talk.R
-import com.nextcloud.talk.api.NcApi
 import com.nextcloud.talk.application.NextcloudTalkApplication
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.openconversations.ListOpenConversationsActivity
-import com.nextcloud.talk.users.UserManager
 import javax.inject.Inject
 
 @AutoInjector(NextcloudTalkApplication::class)
 class ContactsActivityCompose : ComponentActivity() {
-
-    @Inject
-    lateinit var userManager: UserManager
-
-    @Inject
-    lateinit var ncApi: NcApi
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -124,9 +120,21 @@ fun ContactsItem(contacts: List<AutocompleteUser>) {
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         itemsIndexed(items = contacts) { _, contact ->
-            // AsyncImage(model = //url,
-            //     ,contentDescription = null)
-            Text(text = contact.label!!)
+            Row {
+                val imageRequest = ImageRequest.Builder(LocalContext.current)
+                    .data("https://sermo.nextcloud.com/index.php/avatar/sowjanya.kota%40nextcloud.com/512")
+                    .transformations(CircleCropTransformation())
+                    .error(R.drawable.account_circle_96dp)
+                    .placeholder(R.drawable.account_circle_96dp)
+                    .build()
+
+                AsyncImage(
+                    model = imageRequest,
+                    contentDescription = "Image",
+                    modifier = Modifier.size(width = 45.dp, height = 45.dp)
+                )
+                Text(modifier = Modifier.padding(16.dp), text = contact.label!!)
+            }
         }
     }
 }
