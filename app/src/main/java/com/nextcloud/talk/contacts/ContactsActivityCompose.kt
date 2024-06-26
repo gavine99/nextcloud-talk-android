@@ -59,7 +59,7 @@ class ContactsActivityCompose : ComponentActivity() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    lateinit var contactsActivityViewModel: ContactsActivityViewModel
+    private lateinit var contactsActivityViewModel: ContactsActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,7 +77,10 @@ class ContactsActivityCompose : ComponentActivity() {
                         val uiState = contactsActivityViewModel.contactsViewState.collectAsState()
                         Column(Modifier.padding(it)) {
                             ConversationCreationOptions()
-                            ContactsList(contactsUiState = uiState.value)
+                            ContactsList(
+                                contactsUiState = uiState.value,
+                                contactsViewModel = contactsActivityViewModel
+                            )
                         }
                     }
                 )
@@ -87,7 +90,7 @@ class ContactsActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun ContactsList(contactsUiState: ContactsUiState) {
+fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsActivityViewModel) {
     when (contactsUiState) {
         is ContactsUiState.None -> {
         }
@@ -99,7 +102,7 @@ fun ContactsList(contactsUiState: ContactsUiState) {
         is ContactsUiState.Success -> {
             val contacts = contactsUiState.contacts
             if (contacts != null) {
-                ContactsItem(contacts)
+                ContactsItem(contacts, contactsViewModel)
             }
         }
 
@@ -109,7 +112,7 @@ fun ContactsList(contactsUiState: ContactsUiState) {
 }
 
 @Composable
-fun ContactsItem(contacts: List<AutocompleteUser>) {
+fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsActivityViewModel) {
     LazyColumn(
         modifier = Modifier
             .padding(8.dp)
@@ -121,8 +124,9 @@ fun ContactsItem(contacts: List<AutocompleteUser>) {
     ) {
         itemsIndexed(items = contacts) { _, contact ->
             Row {
+                val imageUri = contact.id?.let { contactsViewModel.getImageUri(it, true) }
                 val imageRequest = ImageRequest.Builder(LocalContext.current)
-                    .data("https://sermo.nextcloud.com/index.php/avatar/sowjanya.kota%40nextcloud.com/512")
+                    .data(imageUri)
                     .transformations(CircleCropTransformation())
                     .error(R.drawable.account_circle_96dp)
                     .placeholder(R.drawable.account_circle_96dp)
