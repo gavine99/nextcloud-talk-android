@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,8 +37,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,8 +52,10 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import com.nextcloud.talk.R
 import com.nextcloud.talk.application.NextcloudTalkApplication
+import com.nextcloud.talk.chat.ChatActivity
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteUser
 import com.nextcloud.talk.openconversations.ListOpenConversationsActivity
+import com.nextcloud.talk.utils.bundle.BundleKeys
 import javax.inject.Inject
 
 @AutoInjector(NextcloudTalkApplication::class)
@@ -116,30 +121,60 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsAc
     LazyColumn(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxSize()
-            .clickable {
-            },
+            .fillMaxSize(),
         contentPadding = PaddingValues(all = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         itemsIndexed(items = contacts) { _, contact ->
-            Row {
-                val imageUri = contact.id?.let { contactsViewModel.getImageUri(it, true) }
-                val imageRequest = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUri)
-                    .transformations(CircleCropTransformation())
-                    .error(R.drawable.account_circle_96dp)
-                    .placeholder(R.drawable.account_circle_96dp)
-                    .build()
-
-                AsyncImage(
-                    model = imageRequest,
-                    contentDescription = "Image",
-                    modifier = Modifier.size(width = 45.dp, height = 45.dp)
-                )
-                Text(modifier = Modifier.padding(16.dp), text = contact.label!!)
-            }
+            ContactItemRow(contact, contactsViewModel)
         }
+    }
+}
+
+@Composable
+fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivityViewModel) {
+    val context = LocalContext.current
+    val roomUiState by contactsViewModel.roomViewState.collectAsState()
+
+    Row(
+        modifier = Modifier.fillMaxWidth()
+            .clickable {
+                contactsViewModel.createRoom(
+                    CompanionClass.ROOM_TYPE_ONE_ONE,
+                    contact.source!!,
+                    contact.id!!,
+                    null
+                )
+            }
+    ) {
+        val imageUri = contact.id?.let { contactsViewModel.getImageUri(it, true) }
+        val imageRequest = ImageRequest.Builder(LocalContext.current)
+            .data(imageUri)
+            .transformations(CircleCropTransformation())
+            .error(R.drawable.account_circle_96dp)
+            .placeholder(R.drawable.account_circle_96dp)
+            .build()
+
+        AsyncImage(
+            model = imageRequest,
+            contentDescription = "Image",
+            modifier = Modifier.size(width = 45.dp, height = 45.dp)
+        )
+        Text(modifier = Modifier.padding(16.dp), text = contact.label!!)
+    }
+    when (roomUiState) {
+        is RoomUiState.Success -> {
+            val conversation = (roomUiState as RoomUiState.Success).conversation
+            val bundle = Bundle()
+            bundle.putString(BundleKeys.KEY_ROOM_TOKEN, conversation?.token)
+            bundle.putString(BundleKeys.KEY_ROOM_ID, conversation?.roomId)
+            val chatIntent = Intent(context, ChatActivity::class.java)
+            chatIntent.putExtras(bundle)
+            chatIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            context.startActivity(chatIntent)
+        }
+        is RoomUiState.Error -> Text(text = "Error: ${(roomUiState as RoomUiState.Error).message}", color = Color.Red)
+        RoomUiState.None -> {}
     }
 }
 
@@ -176,10 +211,12 @@ fun ConversationCreationOptions() {
         }
         Row(
 
-            modifier = Modifier.padding(10.dp).clickable {
-                val intent = Intent(context, ListOpenConversationsActivity::class.java)
-                context.startActivity(intent)
-            }
+            modifier = Modifier
+                .padding(10.dp)
+                .clickable {
+                    val intent = Intent(context, ListOpenConversationsActivity::class.java)
+                    context.startActivity(intent)
+                }
         ) {
             Image(
                 painter = painterResource(R.drawable.baseline_format_list_bulleted_24),
@@ -187,5 +224,12 @@ fun ConversationCreationOptions() {
             )
             Text(text = stringResource(R.string.nc_join_open_conversations))
         }
+    }
+}
+
+class CompanionClass() {
+    companion object {
+        private val TAG = ContactsActivity::class.simpleName
+        const val ROOM_TYPE_ONE_ONE = "1"
     }
 }

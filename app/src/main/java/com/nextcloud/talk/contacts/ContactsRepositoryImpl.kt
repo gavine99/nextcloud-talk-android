@@ -9,6 +9,7 @@ package com.nextcloud.talk.contacts
 
 import com.nextcloud.talk.api.NcApiCoroutines
 import com.nextcloud.talk.models.json.autocomplete.AutocompleteOverall
+import com.nextcloud.talk.models.json.conversations.RoomOverall
 
 class ContactsRepositoryImpl(
     private val ncApiCoroutines: NcApiCoroutines
@@ -25,6 +26,19 @@ class ContactsRepositoryImpl(
             ocsApiVersion,
             shareList,
             options
+        )
+        return response
+    }
+
+    override suspend fun createRoom(
+        credentials: String,
+        url: String,
+        queryMap: MutableMap<String, String>
+    ): RoomOverall {
+        val response = ncApiCoroutines.createRoom(
+            credentials,
+            url,
+            queryMap
         )
         return response
     }
