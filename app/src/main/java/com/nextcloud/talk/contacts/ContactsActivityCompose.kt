@@ -240,33 +240,12 @@ fun AppBar(
                 contactsViewModel.updateSearchQuery(query = searchQuery)
                 contactsViewModel.getContactsFromSearchParams()
             },
+            searchState = searchState,
             onCloseClick = {
-                (context as? Activity)?.finish()
             }
         )
     }
 }
-
-// @Composable
-// fun ShowSearch(searchState: Boolean,contactsViewModel:ContactsActivityViewModel,context:Context){
-//     val searchQuery by contactsViewModel.searchQuery.collectAsState()
-//     if(searchState){
-//         DisplaySearch(text = searchQuery,
-//             // update query on text change
-//             onTextChange = {searchQuery ->
-//                 contactsViewModel.updateSearchQuery(query = searchQuery)
-//             },
-//             // on search click, update query and get searched questions title list
-//             onSearchClick = { _ ->
-//                 contactsViewModel.getContactsFromSearchParams()
-//
-//             },
-//             onCloseClick = {
-//                 (context as? Activity)?.finish()
-//             })
-//
-//     }
-// }
 
 @Composable
 fun ConversationCreationOptions(context: Context) {
@@ -297,7 +276,13 @@ fun ConversationCreationOptions(context: Context) {
 }
 
 @Composable
-fun DisplaySearch(text: String, onTextChange: (String) -> Unit, onCloseClick: () -> Unit)  {
+fun DisplaySearch(
+    text: String,
+    onTextChange: (String) -> Unit,
+    searchState: MutableState<Boolean>,
+    onCloseClick: () ->
+    Unit
+) {
     val focusRequester = remember { FocusRequester() }
 
     Surface(
@@ -333,7 +318,7 @@ fun DisplaySearch(text: String, onTextChange: (String) -> Unit, onCloseClick: ()
                 IconButton(
                     onClick = {
                         onTextChange("")
-                        onCloseClick()
+                        searchState.value = false
                     }
                 ) {
                     Icon(
@@ -350,7 +335,7 @@ fun DisplaySearch(text: String, onTextChange: (String) -> Unit, onCloseClick: ()
                         if (text.isNotEmpty()) {
                             onTextChange("")
                         } else {
-                            onCloseClick()
+                            searchState.value = false
                         }
                     }
                 ) {
@@ -376,7 +361,6 @@ fun DisplaySearch(text: String, onTextChange: (String) -> Unit, onCloseClick: ()
                     }
                 }
             ),
-
             colors = TextFieldDefaults.colors(
                 focusedTextColor = Color.Black,
                 cursorColor = Color.Black
