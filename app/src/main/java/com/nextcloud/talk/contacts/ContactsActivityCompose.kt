@@ -352,7 +352,8 @@ fun DisplaySearch(
             },
 
             textStyle = TextStyle(
-                color = Color.Black
+                color = Color.Black,
+                fontSize = 16.sp
             ),
             singleLine = true,
             leadingIcon = {
@@ -401,7 +402,11 @@ fun DisplaySearch(
                     }
                 }
             ),
+            maxLines = 1,
             colors = TextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
                 focusedTextColor = Color.Black,
                 cursorColor = Color.Black
             )
