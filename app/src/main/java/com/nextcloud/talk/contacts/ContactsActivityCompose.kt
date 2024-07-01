@@ -28,6 +28,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
@@ -64,6 +66,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
 import autodagger.AutoInjector
 import coil.compose.AsyncImage
@@ -281,27 +284,42 @@ fun AppBar(
 
 @Composable
 fun ConversationCreationOptions(context: Context) {
-    Column(modifier = Modifier.padding(10.dp)) {
-        Row(modifier = Modifier.padding(10.dp)) {
+    Column {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Image(
+                modifier = Modifier.width(40.dp).height(40.dp).padding(8.dp),
                 painter = painterResource(R.drawable.baseline_chat_bubble_outline_24),
                 contentDescription = "New Conversation Creation Icon"
             )
-            Text(text = stringResource(R.string.nc_create_new_conversation))
+            Text(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                text = stringResource(R.string.nc_create_new_conversation),
+                maxLines = 1,
+                fontSize = 16.sp
+            )
         }
         Row(
             modifier = Modifier
-                .padding(10.dp)
+                .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
                 .clickable {
                     val intent = Intent(context, ListOpenConversationsActivity::class.java)
                     context.startActivity(intent)
-                }
+                },
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
+                modifier = Modifier.width(40.dp).height(40.dp).padding(8.dp),
                 painter = painterResource(R.drawable.baseline_format_list_bulleted_24),
                 contentDescription = "Join open conversations Icon"
             )
-            Text(text = stringResource(R.string.nc_join_open_conversations))
+            Text(
+                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                text = stringResource(R.string.nc_join_open_conversations),
+                fontSize = 16.sp
+            )
         }
     }
 }
