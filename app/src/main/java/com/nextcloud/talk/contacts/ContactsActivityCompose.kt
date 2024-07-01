@@ -14,6 +14,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +29,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -37,6 +38,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,23 +49,19 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
@@ -143,8 +141,20 @@ fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsAc
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsActivityViewModel, context: Context) {
+    val groupedContacts: Map<String, List<AutocompleteUser>> = contacts.groupBy { contact ->
+        (
+            if (contact.source == "users") {
+                contact.label?.first()?.uppercase()
+            } else {
+                contact.source?.replaceFirstChar { actorType ->
+                    actorType.uppercase()
+                }
+            }
+            ).toString()
+    }
     LazyColumn(
         modifier = Modifier
             .padding(8.dp)
@@ -152,16 +162,38 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsAc
         contentPadding = PaddingValues(all = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        itemsIndexed(items = contacts) { _, contact ->
-            ContactItemRow(contact, contactsViewModel, context)
+        groupedContacts.forEach { (initial, contactsForInitial) ->
+            stickyHeader {
+                Column {
+                    Surface(Modifier.fillParentMaxWidth()) {
+                        Header(initial)
+                    }
+                    HorizontalDivider(thickness = 0.1.dp, color = Color.Black)
+                }
+            }
+            items(contactsForInitial) { contact ->
+                ContactItemRow(contact = contact, contactsViewModel = contactsViewModel, context = context)
+            }
         }
     }
 }
 
 @Composable
+fun Header(header: String) {
+    Text(
+        text = header,
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent)
+            .padding(start = 52.dp),
+        color = Color.Blue,
+        fontWeight = FontWeight.Bold
+    )
+}
+
+@Composable
 fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivityViewModel, context: Context) {
     val roomUiState by contactsViewModel.roomViewState.collectAsState()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,7 +204,8 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
                     contact.id!!,
                     null
                 )
-            }
+            },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         val imageUri = contact.id?.let { contactsViewModel.getImageUri(it, true) }
         val imageRequest = ImageRequest.Builder(context)
@@ -235,7 +268,6 @@ fun AppBar(
     if (searchState.value) {
         DisplaySearch(
             text = searchQuery,
-            // update query on text change
             onTextChange = { searchQuery ->
                 contactsViewModel.updateSearchQuery(query = searchQuery)
                 contactsViewModel.getContactsFromSearchParams()
@@ -258,7 +290,6 @@ fun ConversationCreationOptions(context: Context) {
             Text(text = stringResource(R.string.nc_create_new_conversation))
         }
         Row(
-
             modifier = Modifier
                 .padding(10.dp)
                 .clickable {
@@ -283,24 +314,16 @@ fun DisplaySearch(
     onCloseClick: () ->
     Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .height(60.dp)
             .background(Color.White)
     ) {
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
         val keyboardController = LocalSoftwareKeyboardController.current
         TextField(
             modifier = Modifier
-                .fillMaxWidth()
-                .focusRequester(focusRequester)
-                .onFocusChanged {
-                },
+                .fillMaxWidth(),
             value = text,
             onValueChange = { onTextChange(it) },
             placeholder = {
@@ -354,7 +377,6 @@ fun DisplaySearch(
             keyboardActions = KeyboardActions(
                 onSearch = {
                     if (text.trim().isNotEmpty()) {
-                        focusRequester.freeFocus()
                         keyboardController?.hide()
                     } else {
                         return@KeyboardActions
