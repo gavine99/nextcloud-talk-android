@@ -188,7 +188,7 @@ fun Header(header: String) {
         modifier = Modifier
             .fillMaxWidth()
             .background(Color.Transparent)
-            .padding(start = 52.dp),
+            .padding(start = 60.dp),
         color = Color.Blue,
         fontWeight = FontWeight.Bold
     )
