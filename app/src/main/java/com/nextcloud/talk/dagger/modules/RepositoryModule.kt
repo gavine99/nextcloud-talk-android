@@ -48,6 +48,7 @@ import com.nextcloud.talk.shareditems.repositories.SharedItemsRepository
 import com.nextcloud.talk.shareditems.repositories.SharedItemsRepositoryImpl
 import com.nextcloud.talk.translate.repositories.TranslateRepository
 import com.nextcloud.talk.translate.repositories.TranslateRepositoryImpl
+import com.nextcloud.talk.users.UserManager
 import com.nextcloud.talk.utils.DateUtils
 import com.nextcloud.talk.utils.database.user.CurrentUserProviderNew
 import dagger.Module
@@ -155,7 +156,7 @@ class RepositoryModule {
     }
 
     @Provides
-    fun provideContactsRepository(ncApiCoroutines: NcApiCoroutines): ContactsRepository {
-        return ContactsRepositoryImpl(ncApiCoroutines)
+    fun provideContactsRepository(ncApiCoroutines: NcApiCoroutines, userManager: UserManager): ContactsRepository {
+        return ContactsRepositoryImpl(ncApiCoroutines, userManager)
     }
 }

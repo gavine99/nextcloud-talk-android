@@ -11,12 +11,7 @@ import com.nextcloud.talk.models.json.autocomplete.AutocompleteOverall
 import com.nextcloud.talk.models.json.conversations.RoomOverall
 
 interface ContactsRepository {
-    suspend fun getContacts(
-        baseUrl: String,
-        ocsApiVersion: String,
-        shareList: List<String>,
-        options: Map<String, Any>
-    ): AutocompleteOverall
+    suspend fun getContacts(searchQuery: String?, shareTypes: List<String>): AutocompleteOverall
 
     suspend fun createRoom(credentials: String, url: String, queryMap: MutableMap<String, String>): RoomOverall
 }
