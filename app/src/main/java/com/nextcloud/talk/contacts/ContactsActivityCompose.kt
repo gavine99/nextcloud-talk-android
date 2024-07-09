@@ -32,11 +32,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -47,8 +44,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -59,12 +54,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModelProvider
@@ -161,7 +153,7 @@ fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsAc
     LazyColumn(
         modifier = Modifier
             .padding(8.dp)
-            .fillMaxSize(),
+            .fillMaxWidth(),
         contentPadding = PaddingValues(all = 10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
@@ -186,7 +178,7 @@ fun Header(header: String) {
     Text(
         text = header,
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(Color.Transparent)
             .padding(start = 60.dp),
         color = Color.Blue,
@@ -275,9 +267,7 @@ fun AppBar(
                 contactsViewModel.updateSearchQuery(query = searchQuery)
                 contactsViewModel.getContactsFromSearchParams()
             },
-            searchState = searchState,
-            onCloseClick = {
-            }
+            searchState = searchState
         )
     }
 }
@@ -324,95 +314,7 @@ fun ConversationCreationOptions(context: Context) {
     }
 }
 
-@Composable
-fun DisplaySearch(
-    text: String,
-    onTextChange: (String) -> Unit,
-    searchState: MutableState<Boolean>,
-    onCloseClick: () ->
-    Unit
-) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .background(Color.White)
-    ) {
-        val keyboardController = LocalSoftwareKeyboardController.current
-        TextField(
-            modifier = Modifier
-                .fillMaxWidth(),
-            value = text,
-            onValueChange = { onTextChange(it) },
-            placeholder = {
-                Text(
-                    text = "Search",
-                    color = Color.DarkGray
-                )
-            },
 
-            textStyle = TextStyle(
-                color = Color.Black,
-                fontSize = 16.sp
-            ),
-            singleLine = true,
-            leadingIcon = {
-                IconButton(
-                    onClick = {
-                        onTextChange("")
-                        searchState.value = false
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = "Search Icon",
-                        tint = Color.Black
-                    )
-                }
-            },
-
-            trailingIcon = {
-                IconButton(
-                    onClick = {
-                        if (text.isNotEmpty()) {
-                            onTextChange("")
-                        } else {
-                            searchState.value = false
-                        }
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
-                        tint = Color.Black
-                    )
-                }
-            },
-
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    if (text.trim().isNotEmpty()) {
-                        keyboardController?.hide()
-                    } else {
-                        return@KeyboardActions
-                    }
-                }
-            ),
-            maxLines = 1,
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                focusedTextColor = Color.Black,
-                cursorColor = Color.Black
-            )
-        )
-    }
-}
 
 class CompanionClass {
     companion object {

@@ -19,22 +19,19 @@ class ContactsRepositoryImpl(
     private val ncApiCoroutines: NcApiCoroutines,
     private val userManager: UserManager
 ) : ContactsRepository {
-
     private val _currentUser = userManager.currentUser.blockingGet()
     val currentUser: User = _currentUser
     val credentials = ApiUtils.getCredentials(_currentUser.username, _currentUser.token)
     val apiVersion = ApiUtils.getConversationApiVersion(_currentUser, intArrayOf(ApiUtils.API_V4, 1))
 
     override suspend fun getContacts(searchQuery: String?, shareTypes: List<String>): AutocompleteOverall {
-        val retrofitBucket: RetrofitBucket =
-            ApiUtils.getRetrofitBucketForContactsSearchFor14(currentUser!!.baseUrl!!, searchQuery)
+        val retrofitBucket: RetrofitBucket = ApiUtils.getRetrofitBucketForContactsSearchFor14(currentUser.baseUrl!!, searchQuery)
         val modifiedQueryMap: HashMap<String, Any> = HashMap(retrofitBucket.queryMap)
         modifiedQueryMap["limit"] = 50
         modifiedQueryMap["shareTypes[]"] = shareTypes
-
         val response = ncApiCoroutines.getContactsWithSearchParam(
-            credentials!!,
-            retrofitBucket.url!!,
+            credentials,
+            retrofitBucket.url,
             shareTypes,
             modifiedQueryMap
         )
