@@ -42,14 +42,23 @@ class ContactsRepositoryImpl(
     }
 
     override suspend fun createRoom(
-        credentials: String,
-        url: String,
-        queryMap: MutableMap<String, String>
+        roomType: String,
+        sourceType: String,
+        userId: String,
+        conversationName: String?
     ): RoomOverall {
+        val retrofitBucket: RetrofitBucket = ApiUtils.getRetrofitBucketForCreateRoom(
+            apiVersion,
+            _currentUser.baseUrl,
+            roomType,
+            sourceType,
+            userId,
+            conversationName
+        )
         val response = ncApiCoroutines.createRoom(
             credentials,
-            url,
-            queryMap
+            retrofitBucket.url,
+            retrofitBucket.queryMap
         )
         return response
     }
