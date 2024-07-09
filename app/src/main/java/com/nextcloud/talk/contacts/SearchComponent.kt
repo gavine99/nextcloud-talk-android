@@ -26,17 +26,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nextcloud.talk.R
 
 @Composable
-fun DisplaySearch(
-    text: String,
-    onTextChange: (String) -> Unit,
-    searchState: MutableState<Boolean>,
-) {
+fun DisplaySearch(text: String, onTextChange: (String) -> Unit, searchState: MutableState<Boolean>) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -51,7 +49,7 @@ fun DisplaySearch(
             onValueChange = { onTextChange(it) },
             placeholder = {
                 Text(
-                    text = "Search",
+                    text = stringResource(R.string.nc_search),
                     color = Color.DarkGray
                 )
             },
@@ -70,7 +68,7 @@ fun DisplaySearch(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                        contentDescription = "Search Icon",
+                        contentDescription = stringResource(R.string.back_button),
                         tint = Color.Black
                     )
                 }
@@ -88,7 +86,7 @@ fun DisplaySearch(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close Icon",
+                        contentDescription = stringResource(R.string.close_icon),
                         tint = Color.Black
                     )
                 }

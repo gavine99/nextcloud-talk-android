@@ -25,7 +25,10 @@ class ContactsRepositoryImpl(
     val apiVersion = ApiUtils.getConversationApiVersion(_currentUser, intArrayOf(ApiUtils.API_V4, 1))
 
     override suspend fun getContacts(searchQuery: String?, shareTypes: List<String>): AutocompleteOverall {
-        val retrofitBucket: RetrofitBucket = ApiUtils.getRetrofitBucketForContactsSearchFor14(currentUser.baseUrl!!, searchQuery)
+        val retrofitBucket: RetrofitBucket = ApiUtils.getRetrofitBucketForContactsSearchFor14(
+            currentUser.baseUrl!!,
+            searchQuery
+        )
         val modifiedQueryMap: HashMap<String, Any> = HashMap(retrofitBucket.queryMap)
         modifiedQueryMap["limit"] = 50
         modifiedQueryMap["shareTypes[]"] = shareTypes

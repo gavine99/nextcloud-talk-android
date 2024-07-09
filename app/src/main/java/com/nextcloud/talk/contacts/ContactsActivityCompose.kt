@@ -212,7 +212,7 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
 
         AsyncImage(
             model = imageRequest,
-            contentDescription = "Image",
+            contentDescription = stringResource(R.string.user_avatar),
             modifier = Modifier.size(width = 45.dp, height = 45.dp)
         )
         Text(modifier = Modifier.padding(16.dp), text = contact.label!!)
@@ -229,7 +229,7 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
             context.startActivity(chatIntent)
         }
         is RoomUiState.Error -> Text(text = "Error: ${(roomUiState as RoomUiState.Error).message}", color = Color.Red)
-        RoomUiState.None -> {}
+        is RoomUiState.None -> {}
     }
 }
 
@@ -249,14 +249,14 @@ fun AppBar(
             IconButton(onClick = {
                 (context as? Activity)?.finish()
             }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button))
             }
         },
         actions = {
             IconButton(onClick = {
                 searchState.value = true
             }) {
-                Icon(Icons.Filled.Search, contentDescription = "Search")
+                Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
             }
         }
     )
@@ -280,12 +280,17 @@ fun ConversationCreationOptions(context: Context) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                modifier = Modifier.width(40.dp).height(40.dp).padding(8.dp),
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp)
+                    .padding(8.dp),
                 painter = painterResource(R.drawable.baseline_chat_bubble_outline_24),
-                contentDescription = "New Conversation Creation Icon"
+                contentDescription = stringResource(R.string.new_conversation_creation_icon)
             )
             Text(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
                 text = stringResource(R.string.nc_create_new_conversation),
                 maxLines = 1,
                 fontSize = 16.sp
@@ -301,20 +306,23 @@ fun ConversationCreationOptions(context: Context) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                modifier = Modifier.width(40.dp).height(40.dp).padding(8.dp),
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp)
+                    .padding(8.dp),
                 painter = painterResource(R.drawable.baseline_format_list_bulleted_24),
-                contentDescription = "Join open conversations Icon"
+                contentDescription = stringResource(R.string.new_conversation_creation_icon)
             )
             Text(
-                modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-                text = stringResource(R.string.nc_join_open_conversations),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                text = stringResource(R.string.join_open_conversations_icon),
                 fontSize = 16.sp
             )
         }
     }
 }
-
-
 
 class CompanionClass {
     companion object {
