@@ -317,7 +317,7 @@ fun ConversationCreationOptions(context: Context) {
                     .height(40.dp)
                     .padding(8.dp),
                 painter = painterResource(R.drawable.baseline_format_list_bulleted_24),
-                contentDescription = stringResource(R.string.new_conversation_creation_icon)
+                contentDescription = stringResource(R.string.join_open_conversations_icon)
             )
             Text(
                 modifier = Modifier
