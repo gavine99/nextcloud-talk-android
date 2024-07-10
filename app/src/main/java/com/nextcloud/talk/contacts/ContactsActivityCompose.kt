@@ -323,7 +323,7 @@ fun ConversationCreationOptions(context: Context) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight(),
-                text = stringResource(R.string.join_open_conversations_icon),
+                text = stringResource(R.string.nc_join_open_conversations),
                 fontSize = 16.sp
             )
         }
