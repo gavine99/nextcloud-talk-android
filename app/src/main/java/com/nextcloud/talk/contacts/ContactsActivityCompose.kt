@@ -12,6 +12,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -127,13 +128,15 @@ fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsAc
         }
         is ContactsUiState.Success -> {
             val contacts = contactsUiState.contacts
+            Log.d(CompanionClass.TAG, "Contacts:$contacts")
             if (contacts != null) {
                 ContactsItem(contacts, contactsViewModel, context)
             }
         }
         is ContactsUiState.Error -> {
+            val errorMessage = contactsUiState.message
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Error: ${(contactsUiState as RoomUiState.Error).message}", color = Color.Red)
+                Text(text = "Error: $errorMessage", color = Color.Red)
             }
         }
     }
@@ -232,8 +235,9 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
             context.startActivity(chatIntent)
         }
         is RoomUiState.Error -> {
+            val errorMessage = (roomUiState as RoomUiState.Error).message
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "Error: ${(roomUiState as RoomUiState.Error).message}", color = Color.Red)
+                Text(text = "Error: $errorMessage", color = Color.Red)
             }
         }
         is RoomUiState.None -> {}
@@ -333,7 +337,7 @@ fun ConversationCreationOptions(context: Context) {
 
 class CompanionClass {
     companion object {
-        private val TAG = ContactsActivity::class.simpleName
-        const val ROOM_TYPE_ONE_ONE = "1"
+        internal val TAG = ContactsActivityCompose::class.simpleName
+        internal const val ROOM_TYPE_ONE_ONE = "1"
     }
 }
