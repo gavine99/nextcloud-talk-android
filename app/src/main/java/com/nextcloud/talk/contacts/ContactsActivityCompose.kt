@@ -132,6 +132,9 @@ fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsAc
             }
         }
         is ContactsUiState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Error: ${(contactsUiState as RoomUiState.Error).message}", color = Color.Red)
+            }
         }
     }
 }
@@ -228,7 +231,11 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
             chatIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
             context.startActivity(chatIntent)
         }
-        is RoomUiState.Error -> Text(text = "Error: ${(roomUiState as RoomUiState.Error).message}", color = Color.Red)
+        is RoomUiState.Error -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = "Error: ${(roomUiState as RoomUiState.Error).message}", color = Color.Red)
+            }
+        }
         is RoomUiState.None -> {}
     }
 }
