@@ -78,13 +78,13 @@ class ContactsActivityCompose : ComponentActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-    private lateinit var contactsActivityViewModel: ContactsActivityViewModel
+    private lateinit var contactsViewModel: ContactsViewModel
 
     @SuppressLint("UnrememberedMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         NextcloudTalkApplication.sharedApplication!!.componentApplication.inject(this)
-        contactsActivityViewModel = ViewModelProvider(this, viewModelFactory)[ContactsActivityViewModel::class.java]
+        contactsViewModel = ViewModelProvider(this, viewModelFactory)[ContactsViewModel::class.java]
 
         setContent {
             MaterialTheme {
@@ -95,17 +95,17 @@ class ContactsActivityCompose : ComponentActivity() {
                         AppBar(
                             title = stringResource(R.string.nc_app_product_name),
                             context = context,
-                            contactsViewModel = contactsActivityViewModel,
+                            contactsViewModel = contactsViewModel,
                             searchState = searchState
                         )
                     },
                     content = {
-                        val uiState = contactsActivityViewModel.contactsViewState.collectAsState()
+                        val uiState = contactsViewModel.contactsViewState.collectAsState()
                         Column(Modifier.padding(it)) {
                             ConversationCreationOptions(context = context)
                             ContactsList(
                                 contactsUiState = uiState.value,
-                                contactsViewModel = contactsActivityViewModel,
+                                contactsViewModel = contactsViewModel,
                                 context = context
                             )
                         }
@@ -117,7 +117,7 @@ class ContactsActivityCompose : ComponentActivity() {
 }
 
 @Composable
-fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsActivityViewModel, context: Context) {
+fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsViewModel, context: Context) {
     when (contactsUiState) {
         is ContactsUiState.None -> {
         }
@@ -144,7 +144,7 @@ fun ContactsList(contactsUiState: ContactsUiState, contactsViewModel: ContactsAc
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsActivityViewModel, context: Context) {
+fun ContactsItem(contacts: List<AutocompleteUser>, contactsViewModel: ContactsViewModel, context: Context) {
     val groupedContacts: Map<String, List<AutocompleteUser>> = contacts.groupBy { contact ->
         (
             if (contact.source == "users") {
@@ -193,7 +193,7 @@ fun Header(header: String) {
 }
 
 @Composable
-fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivityViewModel, context: Context) {
+fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsViewModel, context: Context) {
     val roomUiState by contactsViewModel.roomViewState.collectAsState()
     Row(
         modifier = Modifier
@@ -250,7 +250,7 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsActivit
 fun AppBar(
     title: String,
     context: Context,
-    contactsViewModel: ContactsActivityViewModel,
+    contactsViewModel: ContactsViewModel,
     searchState: MutableState<Boolean>
 ) {
     val searchQuery by contactsViewModel.searchQuery.collectAsState()
