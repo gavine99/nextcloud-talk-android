@@ -147,5 +147,5 @@ abstract class ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(ContactsViewModel::class)
-    abstract fun contactsActivityViewModel(viewModel: ContactsViewModel): ViewModel
+    abstract fun contactsViewModel(viewModel: ContactsViewModel): ViewModel
 }

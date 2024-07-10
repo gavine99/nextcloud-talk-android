@@ -247,12 +247,7 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsViewMod
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(
-    title: String,
-    context: Context,
-    contactsViewModel: ContactsViewModel,
-    searchState: MutableState<Boolean>
-) {
+fun AppBar(title: String, context: Context, contactsViewModel: ContactsViewModel, searchState: MutableState<Boolean>) {
     val searchQuery by contactsViewModel.searchQuery.collectAsState()
     TopAppBar(
         title = { Text(text = title) },
