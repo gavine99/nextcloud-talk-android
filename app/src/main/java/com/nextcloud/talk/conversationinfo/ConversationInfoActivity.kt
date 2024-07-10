@@ -76,7 +76,6 @@ import com.nextcloud.talk.utils.DateUtils
 import com.nextcloud.talk.utils.ShareUtils
 import com.nextcloud.talk.utils.SpreedFeatures
 import com.nextcloud.talk.utils.bundle.BundleKeys
-import com.nextcloud.talk.utils.database.user.CurrentUserProviderNew
 import com.nextcloud.talk.utils.preferences.preferencestorage.DatabaseStorageModule
 import eu.davidea.flexibleadapter.FlexibleAdapter
 import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager
@@ -102,9 +101,6 @@ class ConversationInfoActivity :
 
     @Inject
     lateinit var ncApi: NcApi
-
-    @Inject
-    lateinit var currentUserProvider: CurrentUserProviderNew
 
     @Inject
     lateinit var conversationsRepository: ConversationsRepository
@@ -162,7 +158,6 @@ class ConversationInfoActivity :
         conversationToken = intent.getStringExtra(BundleKeys.KEY_ROOM_TOKEN)!!
         hasAvatarSpacing = intent.getBooleanExtra(BundleKeys.KEY_ROOM_ONE_TO_ONE, false)
         credentials = ApiUtils.getCredentials(conversationUser.username, conversationUser.token)!!
-        initObservers()
     }
 
     override fun onStart() {
@@ -195,6 +190,7 @@ class ConversationInfoActivity :
         binding.addParticipantsAction.visibility = GONE
 
         binding.progressBar.let { viewThemeUtils.platform.colorCircularProgressBar(it, ColorRole.PRIMARY) }
+        initObservers()
     }
 
     private fun initObservers() {
