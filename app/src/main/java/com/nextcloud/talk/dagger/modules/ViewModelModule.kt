@@ -10,7 +10,7 @@ package com.nextcloud.talk.dagger.modules
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nextcloud.talk.chat.viewmodels.ChatViewModel
-import com.nextcloud.talk.contacts.ContactsActivityViewModel
+import com.nextcloud.talk.contacts.ContactsViewModel
 import com.nextcloud.talk.conversation.viewmodel.ConversationViewModel
 import com.nextcloud.talk.conversation.viewmodel.RenameConversationViewModel
 import com.nextcloud.talk.conversationinfo.viewmodel.ConversationInfoViewModel
@@ -146,6 +146,6 @@ abstract class ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(ContactsActivityViewModel::class)
-    abstract fun contactsActivityViewModel(viewModel: ContactsActivityViewModel): ViewModel
+    @ViewModelKey(ContactsViewModel::class)
+    abstract fun contactsViewModel(viewModel: ContactsViewModel): ViewModel
 }

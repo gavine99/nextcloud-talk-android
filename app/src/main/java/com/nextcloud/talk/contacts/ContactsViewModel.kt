@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class ContactsActivityViewModel @Inject constructor(
+class ContactsViewModel @Inject constructor(
     private val repository: ContactsRepository,
     private val userManager: UserManager
 ) : ViewModel() {
