@@ -34,6 +34,8 @@ class ContactsViewModel @Inject constructor(
     val searchQuery: StateFlow<String> = _searchQuery
     private val shareTypes: MutableList<String> = mutableListOf(ShareType.User.shareType)
     val shareTypeList: List<String> = shareTypes
+    private val _searchState = MutableStateFlow(false)
+    val searchState: StateFlow<Boolean> = _searchState
 
     init {
         getContactsFromSearchParams()
@@ -41,6 +43,10 @@ class ContactsViewModel @Inject constructor(
 
     fun updateSearchQuery(query: String) {
         _searchQuery.value = query
+    }
+
+    fun updateSearchState(searchState: Boolean) {
+        _searchState.value = searchState
     }
 
     fun updateShareTypes(value: String) {

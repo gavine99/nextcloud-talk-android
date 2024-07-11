@@ -47,10 +47,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -89,14 +87,12 @@ class ContactsActivityCompose : ComponentActivity() {
         setContent {
             MaterialTheme {
                 val context = LocalContext.current
-                var searchState = mutableStateOf(false)
                 Scaffold(
                     topBar = {
                         AppBar(
                             title = stringResource(R.string.nc_app_product_name),
                             context = context,
-                            contactsViewModel = contactsViewModel,
-                            searchState = searchState
+                            contactsViewModel = contactsViewModel
                         )
                     },
                     content = {
@@ -247,8 +243,9 @@ fun ContactItemRow(contact: AutocompleteUser, contactsViewModel: ContactsViewMod
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBar(title: String, context: Context, contactsViewModel: ContactsViewModel, searchState: MutableState<Boolean>) {
+fun AppBar(title: String, context: Context, contactsViewModel: ContactsViewModel) {
     val searchQuery by contactsViewModel.searchQuery.collectAsState()
+    val searchState = contactsViewModel.searchState.collectAsState()
     TopAppBar(
         title = { Text(text = title) },
         navigationIcon = {
@@ -260,7 +257,7 @@ fun AppBar(title: String, context: Context, contactsViewModel: ContactsViewModel
         },
         actions = {
             IconButton(onClick = {
-                searchState.value = true
+                contactsViewModel.updateSearchState(true)
             }) {
                 Icon(Icons.Filled.Search, contentDescription = stringResource(R.string.search_icon))
             }
@@ -273,7 +270,7 @@ fun AppBar(title: String, context: Context, contactsViewModel: ContactsViewModel
                 contactsViewModel.updateSearchQuery(query = searchQuery)
                 contactsViewModel.getContactsFromSearchParams()
             },
-            searchState = searchState
+            contactsViewModel = contactsViewModel
         )
     }
 }

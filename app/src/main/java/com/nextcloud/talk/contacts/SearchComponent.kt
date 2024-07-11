@@ -22,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -34,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.nextcloud.talk.R
 
 @Composable
-fun DisplaySearch(text: String, onTextChange: (String) -> Unit, searchState: MutableState<Boolean>) {
+fun DisplaySearch(text: String, onTextChange: (String) -> Unit, contactsViewModel: ContactsViewModel) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,7 +62,7 @@ fun DisplaySearch(text: String, onTextChange: (String) -> Unit, searchState: Mut
                 IconButton(
                     onClick = {
                         onTextChange("")
-                        searchState.value = false
+                        contactsViewModel.updateSearchState(false)
                     }
                 ) {
                     Icon(
@@ -80,7 +79,7 @@ fun DisplaySearch(text: String, onTextChange: (String) -> Unit, searchState: Mut
                         if (text.isNotEmpty()) {
                             onTextChange("")
                         } else {
-                            searchState.value = false
+                            contactsViewModel.updateSearchState(false)
                         }
                     }
                 ) {
