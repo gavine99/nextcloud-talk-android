@@ -601,10 +601,12 @@ class ChatActivity :
 
                     val urlForChatting = ApiUtils.getUrlForChat(chatApiVersion, conversationUser?.baseUrl, roomToken)
 
-                    chatViewModel.loadMessages(
-                        withCredentials = credentials!!,
-                        withUrl = urlForChatting
-                    )
+                    if (adapter?.isEmpty == true) {
+                        chatViewModel.loadMessages(
+                            withCredentials = credentials!!,
+                            withUrl = urlForChatting
+                        )
+                    }
                 }
 
                 is ChatViewModel.GetCapabilitiesErrorState -> {

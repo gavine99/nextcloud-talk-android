@@ -442,9 +442,11 @@ class OfflineFirstChatRepository @Inject constructor(
                     // the parent message is always the newest state, no matter how old the system message is.
                     // that's why we can just take the parent, update it in DB and update the UI
                     messageJson.parentMessage?.let { parentMessageJson ->
-                        val parentMessageEntity = parentMessageJson.asEntity(currentUser.id!!)
-                        chatDao.upsertChatMessage(parentMessageEntity)
-                        _updateMessageFlow.emit(parentMessageEntity.asModel())
+                        parentMessageJson.message?.let {
+                            val parentMessageEntity = parentMessageJson.asEntity(currentUser.id!!)
+                            chatDao.upsertChatMessage(parentMessageEntity)
+                            _updateMessageFlow.emit(parentMessageEntity.asModel())
+                        }
                     }
                 }
 
