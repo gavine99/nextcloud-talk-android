@@ -114,13 +114,18 @@ class OfflineFirstChatRepository @Inject constructor(
 
             sync(withNetworkParams)
 
-            Log.d(TAG, "newestMessageId after sync: " + chatDao.getNewestMessageId(internalConversationId))
+            val newestMessageId = chatDao.getNewestMessageId(internalConversationId)
+            Log.d(TAG, "newestMessageId after sync: $newestMessageId")
+
+            val showBubble = conversationModel.lastReadMessage.toLong() < newestMessageId
+            if (showBubble) {
+                updateUiForLastCommonRead(200)
+            }
 
             showLast100MessagesBeforeAndEqual(
                 internalConversationId,
                 chatDao.getNewestMessageId(internalConversationId)
             )
-            updateUiForLastCommonRead(200)
 
             initMessagePolling()
         }
@@ -133,9 +138,7 @@ class OfflineFirstChatRepository @Inject constructor(
             if (delay > 0) {
                 delay(delay)
             }
-            newXChatLastCommonRead?.let {
-                _lastCommonReadFlow.emit(it)
-            }
+            _lastCommonReadFlow.emit(conversationModel.lastReadMessage)
         }
     }
 
@@ -163,7 +166,6 @@ class OfflineFirstChatRepository @Inject constructor(
             }
 
             showLast100MessagesBefore(internalConversationId, beforeMessageId)
-            updateUiForLastCommonRead(0)
         }
 
     override fun initMessagePolling(): Job =
@@ -194,8 +196,6 @@ class OfflineFirstChatRepository @Inject constructor(
                     val pair = Pair(true, chatMessages)
                     _messageFlow.emit(pair)
                 }
-
-                updateUiForLastCommonRead(0)
 
                 val newestMessage = chatDao.getNewestMessageId(internalConversationId).toInt()
 

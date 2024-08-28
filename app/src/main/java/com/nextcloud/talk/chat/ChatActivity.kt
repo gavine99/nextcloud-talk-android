@@ -784,6 +784,16 @@ class ChatActivity :
         }
 
         this.lifecycleScope.launch {
+            chatViewModel.getLastCommonReadFlow
+                .onEach { lastRead ->
+                    scrollToMessageWithId(lastRead.toString())
+                    binding.scrollDownButton.visibility = View.GONE
+                    binding.unreadMessagesPopup.show()
+                }
+                .collect()
+        }
+
+        this.lifecycleScope.launch {
             chatViewModel.getMessageFlow
                 .onEach { pair ->
                     val lookIntoFuture = pair.first
